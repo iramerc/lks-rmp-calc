@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LOOKSI — Калькулятор RPM</title>
+<style>
+  :root{
+    --powder:#f3e3de;
+    --powder-2:#eed6ce;
+    --card:#fffaf8;
+    --accent:#d98b7a;
+    --accent-dark:#b5644f;
+    --text:#4a3934;
+    --muted:#8a7570;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    min-height:100vh;
+    background:linear-gradient(160deg,var(--powder) 0%, var(--powder-2) 100%);
+    font-family:'Segoe UI', Roboto, Arial, sans-serif;
+    color:var(--text);
+    padding:40px 16px 80px;
+  }
+  .wrap{
+    max-width:880px;
+    margin:0 auto;
+  }
+  header{
+    text-align:center;
+    margin-bottom:40px;
+  }
+  h1{
+    font-size:2.4rem;
+    margin:0 0 8px;
+    color:var(--accent-dark);
+    letter-spacing:0.5px;
+  }
+  .subtitle{
+    font-size:1.1rem;
+    color:var(--muted);
+    margin:0;
+  }
+  .rpm-box{
+    background:var(--card);
+    border-radius:18px;
+    padding:18px 24px;
+    max-width:420px;
+    margin:28px auto 0;
+    box-shadow:0 6px 20px rgba(181,100,79,0.12);
+    text-align:center;
+  }
+  .rpm-box label{
+    display:block;
+    font-size:0.85rem;
+    color:var(--muted);
+    margin-bottom:6px;
+  }
+  .rpm-box input{
+    width:140px;
+    text-align:center;
+    font-size:1.3rem;
+    font-weight:700;
+    color:var(--accent-dark);
+    border:2px solid var(--powder-2);
+    border-radius:10px;
+    padding:6px 10px;
+    background:#fff;
+  }
+  .rpm-box .hint{
+    font-size:0.78rem;
+    color:var(--muted);
+    margin-top:6px;
+  }
+  .card{
+    background:var(--card);
+    border-radius:22px;
+    padding:32px;
+    margin-bottom:28px;
+    box-shadow:0 8px 24px rgba(181,100,79,0.10);
+  }
+  .card h2{
+    font-size:1.35rem;
+    margin:0 0 4px;
+    color:var(--accent-dark);
+  }
+  .card .desc{
+    color:var(--muted);
+    font-size:0.92rem;
+    margin:0 0 22px;
+  }
+  .row{
+    display:flex;
+    gap:20px;
+    flex-wrap:wrap;
+    margin-bottom:20px;
+  }
+  .field{
+    flex:1;
+    min-width:200px;
+  }
+  .field label{
+    display:block;
+    font-size:0.88rem;
+    font-weight:600;
+    margin-bottom:8px;
+    color:var(--text);
+  }
+  .field input{
+    width:100%;
+    padding:12px 14px;
+    border-radius:12px;
+    border:2px solid #ecdad3;
+    font-size:1.05rem;
+    background:#fffdfc;
+    color:var(--text);
+    outline:none;
+    transition:border-color .2s;
+  }
+  .field input:focus{
+    border-color:var(--accent);
+  }
+  .result{
+    background:linear-gradient(135deg, #fbeee9, #f6dcd3);
+    border-radius:16px;
+    padding:20px 22px;
+    margin-top:10px;
+  }
+  .result-line{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    padding:8px 0;
+    border-bottom:1px dashed #e3c3b7;
+  }
+  .result-line:last-child{border-bottom:none;}
+  .result-line .k{
+    color:var(--muted);
+    font-size:0.92rem;
+  }
+  .result-line .v{
+    font-size:1.25rem;
+    font-weight:700;
+    color:var(--accent-dark);
+  }
+  footer{
+    text-align:center;
+    color:var(--muted);
+    font-size:0.8rem;
+    margin-top:20px;
+  }
+  @media (max-width:520px){
+    h1{font-size:1.9rem;}
+    .card{padding:22px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Калькулятор RPM</h1>
+    <p class="subtitle">доход на 1000 просмотров рилс</p>
+    <div class="rpm-box">
+      <label>Ваш RPM (доход на 1000 просмотров, ₽)</label>
+      <input type="number" id="rpm" value="783" min="1" step="1">
+      <div class="hint">Средневзвешенный RPM за 2 недели наблюдений: 783 ₽. Можно изменить на свой.</div>
+    </div>
+  </header>
+
+  <div class="card">
+    <h2>Вариант 1. От суммы к охвату</h2>
+    <p class="desc">Вводим сколько денег нужно за 30 дней — получаем, сколько просмотров рилс нужно обеспечивать каждый день.</p>
+    <div class="row">
+      <div class="field">
+        <label>Желаемая сумма за 30 дней, ₽</label>
+        <input type="number" id="goal" value="10000000" min="0" step="1000">
+      </div>
+      <div class="field">
+        <label>Период, дней</label>
+        <input type="number" id="days" value="30" min="1" step="1">
+      </div>
+    </div>
+    <div class="result">
+      <div class="result-line">
+        <span class="k">Всего просмотров нужно за период</span>
+        <span class="v" id="out-total-views">—</span>
+      </div>
+      <div class="result-line">
+        <span class="k">Нужный охват в день</span>
+        <span class="v" id="out-daily-views">—</span>
+      </div>
+      <div class="result-line">
+        <span class="k">Это ≈ просмотров на 1000</span>
+        <span class="v" id="out-daily-k">—</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Вариант 2. От охвата к доходу</h2>
+    <p class="desc">Вводим количество роликов и охват на один ролик — получаем прогноз дохода.</p>
+    <div class="row">
+      <div class="field">
+        <label>Количество роликов</label>
+        <input type="number" id="videos" value="10" min="0" step="1">
+      </div>
+      <div class="field">
+        <label>Охват на один ролик (просмотры)</label>
+        <input type="number" id="reach" value="50000" min="0" step="1000">
+      </div>
+    </div>
+    <div class="result">
+      <div class="result-line">
+        <span class="k">Суммарный охват</span>
+        <span class="v" id="out-total-reach">—</span>
+      </div>
+      <div class="result-line">
+        <span class="k">Прогноз дохода</span>
+        <span class="v" id="out-revenue">—</span>
+      </div>
+      <div class="result-line">
+        <span class="k">Доход с одного ролика</span>
+        <span class="v" id="out-per-video">—</span>
+      </div>
+    </div>
+  </div>
+
+  <footer>LOOKSI · Калькулятор построен на данных вашей воронки просмотры → выручка</footer>
+</div>
+
+<script>
+function fmt(n){
+  if(!isFinite(n)) return "—";
+  return Math.round(n).toLocaleString('ru-RU');
+}
+
+function calc(){
+  var rpm = parseFloat(document.getElementById('rpm').value) || 0;
+
+  // Вариант 1
+  var goal = parseFloat(document.getElementById('goal').value) || 0;
+  var days = parseFloat(document.getElementById('days').value) || 1;
+  var totalViews = rpm > 0 ? (goal / rpm) * 1000 : 0;
+  var dailyViews = totalViews / days;
+  document.getElementById('out-total-views').textContent = fmt(totalViews);
+  document.getElementById('out-daily-views').textContent = fmt(dailyViews);
+  document.getElementById('out-daily-k').textContent = fmt(dailyViews/1000) + " × 1000";
+
+  // Вариант 2
+  var videos = parseFloat(document.getElementById('videos').value) || 0;
+  var reach = parseFloat(document.getElementById('reach').value) || 0;
+  var totalReach = videos * reach;
+  var revenue = (totalReach/1000) * rpm;
+  var perVideo = videos > 0 ? revenue/videos : 0;
+  document.getElementById('out-total-reach').textContent = fmt(totalReach);
+  document.getElementById('out-revenue').textContent = fmt(revenue) + " ₽";
+  document.getElementById('out-per-video').textContent = fmt(perVideo) + " ₽";
+}
+
+document.querySelectorAll('input').forEach(function(el){
+  el.addEventListener('input', calc);
+});
+calc();
+</script>
+</body>
+</html>
