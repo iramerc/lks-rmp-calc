@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LOOKSI — блогеры: быстрый расчёт</title>
+<style>
+:root{--bg:#f5ece4;--card:#fbf6f1;--line:#e6d8cc;--ink:#4a3b35;--mute:#9a867a;--accent:#c9a18f;--accent2:#b5836f;--pos:#7e9b7a;--neg:#c1736b}
+*{box-sizing:border-box}
+body{font-family:-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);margin:0;padding:24px 16px}
+.wrap{max-width:820px;margin:0 auto}
+h1{font-size:22px;font-weight:600;margin:0 0 4px;letter-spacing:.2px}
+.sub{color:var(--mute);font-size:13px;margin-bottom:20px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:16px;box-shadow:0 4px 18px rgba(150,110,90,.07)}
+h2{font-size:12px;font-weight:600;color:var(--accent2);text-transform:uppercase;letter-spacing:1px;margin:0 0 14px}
+.inputs{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+.inputs label{display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--mute)}
+input{width:100%;background:#fff;border:1px solid var(--line);color:var(--ink);border-radius:12px;padding:11px 12px;font-size:17px;font-weight:500}
+input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(201,161,143,.25)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:11px 8px;text-align:right;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left;color:var(--mute)}
+th{font-weight:600;font-size:13px}
+th.p{color:var(--neg)}th.b{color:var(--accent2)}th.o{color:var(--pos)}
+tr.main td{font-weight:700;font-size:16px;border-bottom:2px solid var(--line)}
+tr.main td:first-child{color:var(--ink)}
+.pos{color:var(--pos)}.neg{color:var(--neg)}
+details{margin-top:14px;border-top:1px dashed var(--line);padding-top:12px}
+summary{cursor:pointer;color:var(--accent2);font-size:13px;font-weight:600;list-style:none}
+summary::before{content:"＋ ";}details[open] summary::before{content:"－ ";}
+.dgrid{display:grid;grid-template-columns:1fr repeat(3,92px);gap:8px 10px;align-items:center;font-size:12px;color:var(--mute);margin-top:12px}
+.dgrid input{padding:7px 8px;font-size:13px;text-align:right}
+.dgrid .h{font-weight:600;color:var(--ink);text-align:center}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:10px}
+.fgrid label{display:flex;flex-direction:column;gap:4px;font-size:11px;color:var(--mute)}
+.fgrid input{padding:7px 8px;font-size:13px}
+.note{font-size:12px;color:var(--mute);line-height:1.55;margin-top:12px}
+.kv{display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--line);color:var(--mute)}.kv b{color:var(--ink)}
+</style></head><body><div class="wrap">
+<h1>Блогеры → заработок Looksi</h1>
+<div class="sub">Введите три числа — получите результат в трёх сценариях. Детали и допущения раскрываются.</div>
+
+<div class="card"><h2>Вводные</h2>
+<div class="inputs">
+<label>Охват на 1 ролике<input id="reach" type="number" value="12000"></label>
+<label>Количество роликов<input id="n" type="number" value="14"></label>
+<label>Общая выплата блогеру, ₽<input id="fee" type="number" value="4000"></label>
+</div></div>
+
+<div class="card"><h2>Заработок Looksi</h2>
+<div id="out"></div>
+<details><summary>Детали расчёта</summary>
+<div id="det"></div>
+<div class="sec" style="margin-top:14px;font-size:12px;color:var(--accent2);font-weight:600">ДОПУЩЕНИЯ ПО СЦЕНАРИЯМ</div>
+<div class="dgrid">
+<span></span><span class="h" style="color:var(--neg)">Пессим.</span><span class="h" style="color:var(--accent2)">Базовый</span><span class="h" style="color:var(--pos)">Оптим.</span>
+<span>Доля продающих роликов, %</span><input id="sell0" type="number" value="20"><input id="sell1" type="number" value="40"><input id="sell2" type="number" value="60">
+<span>Конв. непродающего ролика, % от продающего</span><input id="ns0" type="number" value="5"><input id="ns1" type="number" value="10"><input id="ns2" type="number" value="15">
+<span>Доля продаж из свежих охватов фаундера, %</span><input id="at0" type="number" value="50"><input id="at1" type="number" value="60"><input id="at2" type="number" value="80">
+<span>Конверсия блогера, % от фаундера</span><input id="bl0" type="number" value="30"><input id="bl1" type="number" value="50"><input id="bl2" type="number" value="70">
+</div>
+<div class="sec" style="margin-top:18px;font-size:12px;color:var(--accent2);font-weight:600">ВОРОНКА ФАУНДЕРА</div>
+<div class="fgrid">
+<label>Просмотры<input id="v" type="number" value="453154"></label>
+<label>Оплаты, шт<input id="pay" type="number" value="121"></label>
+<label>Выручка, ₽<input id="rev" type="number" value="111607"></label>
+<label>COGS на продажу, ₽<input id="cogs" type="number" value="200"></label>
+</div>
+<div class="note">Конверсия блогера = конверсия фаундера × доля свежих охватов × дисконт блогера × микс продающих/непродающих роликов. Прибыль = продажи × (чек − COGS) − выплата блогеру.</div>
+</details></div>
+</div>
+<script>
+const $=id=>document.getElementById(id),g=id=>parseFloat($(id).value)||0;
+const f=(x,d=0)=>isFinite(x)?x.toLocaleString('ru-RU',{maximumFractionDigits:d}):"—";
+const cls=x=>x<0?'neg':'pos';
+function calc(){
+ const reach=g('reach'),n=g('n'),fee=g('fee');
+ const aov=g('pay')?g('rev')/g('pay'):0,gp=aov-g('cogs'),cr=g('v')?g('pay')/g('v'):0;
+ const names=['Пессимистичный','Базовый','Оптимистичный'],cl=['p','b','o'];
+ const R=[0,1,2].map(i=>{
+  const s=g('sell'+i)/100,ns=g('ns'+i)/100;
+  const mix=s+(1-s)*ns,c=cr*g('at'+i)/100*g('bl'+i)/100*mix;
+  const sales=reach*n*c,rev=sales*aov,gross=sales*gp,net=gross-fee;
+  return {mix,c,sales,rev,gross,net,roi:fee?net/fee*100:0,cac:sales?fee/sales:NaN,rps:c?1/c:NaN};
+ });
+ const row=(l,fn,main,c)=>`<tr class="${main?'main':''}"><td>${l}</td>`+R.map(r=>`<td class="${c?cls(r.net):''}">${fn(r)}</td>`).join('')+'</tr>';
+ $('out').innerHTML='<table><tr><th></th>'+names.map((x,i)=>`<th class="${cl[i]}">${x}</th>`).join('')+'</tr>'+
+  row('Чистая прибыль, ₽',r=>(r.net>0?'+':'')+f(r.net),true,true)+
+  row('Продаж, шт',r=>f(r.sales,1))+
+  row('Выручка, ₽',r=>f(r.rev))+
+  row('ROI',r=>f(r.roi)+'%')+'</table>';
+ $('det').innerHTML=
+  `<div class="kv"><span>Общий охват пилота</span><b>${f(reach*n)}</b></div>`+
+  `<div class="kv"><span>Средний чек / прибыль с продажи</span><b>${f(aov)} ₽ / ${f(gp)} ₽</b></div>`+
+  `<div class="kv"><span>Безубыточность (продаж)</span><b>${gp>0?f(fee/gp,2):'—'}</b></div>`+
+  '<table style="margin-top:10px"><tr><th></th>'+names.map((x,i)=>`<th class="${cl[i]}">${x}</th>`).join('')+'</tr>'+
+  row('Валовая прибыль (− COGS), ₽',r=>f(r.gross))+
+  row('Выплата блогеру, ₽',r=>f(fee))+
+  row('CAC, ₽',r=>f(r.cac))+
+  row('Охват на 1 продажу',r=>f(r.rps))+
+  row('Микс продающих роликов',r=>r.mix.toFixed(2))+
+  row('Конверсия охват → оплата',r=>(r.c*100).toFixed(4)+'%')+'</table>';
+}
+document.addEventListener('input',calc);calc();
+</script></body></html>
