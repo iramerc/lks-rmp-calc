@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LOOKSI · демо: от онбординга до образа</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4efe8;--ink:#1c1714;--muted:#6f655c;--line:#e4d9cc;--card:#fffdfb;--accent:#c45c3e;--accent-soft:#f6e4dc;--green:#2f6f55;--green-soft:#e5f2eb;--shadow:0 18px 50px rgba(40,24,12,.10)}
+*{box-sizing:border-box}
+body{margin:0;font-family:Manrope,system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.4}
+button{font-family:Manrope,system-ui,sans-serif}
+.wrap{max-width:1180px;margin:0 auto;padding:26px 20px 60px;display:grid;grid-template-columns:400px 1fr;gap:32px;align-items:start}
+.phone{width:400px;background:var(--ink);border-radius:40px;padding:11px;box-shadow:var(--shadow);position:sticky;top:14px}
+.screen{background:#fbf7f2;border-radius:30px;height:820px;position:relative;overflow:hidden;display:flex;flex-direction:column}
+.notch{height:8px;width:70px;background:var(--ink);border-radius:8px;margin:10px auto 0;opacity:.85;flex:none}
+.col{flex:1;display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.bar{display:flex;justify-content:space-between;align-items:center;padding:10px 16px 6px;flex:none}
+.bar b{font-size:15px;font-weight:800}
+.pc{display:flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:4px 10px 4px 5px;font-size:11.5px;font-weight:700;cursor:pointer;color:var(--ink)}
+.ring{width:20px;height:20px;border-radius:50%;display:grid;place-items:center}.ring i{width:12px;height:12px;border-radius:50%;background:#fff;display:block}
+.body{flex:1;overflow-y:auto;padding:4px 16px 18px}
+.nav{display:flex;border-top:1px solid var(--line);background:#fff;flex:none}
+.nav button{flex:1;border:0;background:none;padding:12px 4px 14px;font-size:12px;font-weight:700;color:var(--muted);cursor:pointer}.nav button.on{color:var(--accent)}
+h2{margin:6px 0 6px;font-size:24px;line-height:1.1;letter-spacing:-.6px;font-weight:800}
+.sub{color:var(--muted);font-size:13.5px;margin:0 0 12px}
+.btn,.ghost{display:block;width:100%;border:0;border-radius:14px;padding:13px 10px;font-size:14px;font-weight:700;cursor:pointer;margin-top:8px;text-align:center}
+.btn{background:var(--ink);color:#fff}.btn.accent{background:var(--accent)}.btn.sm{padding:10px}
+.ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
+.dots{display:flex;gap:5px;margin:2px 0 10px}.dots i{height:4px;flex:1;border-radius:4px;background:#eadfd4}.dots i.on{background:var(--ink)}
+.stage{background:linear-gradient(180deg,#f6e7df,#ead9cf 60%,#dccabd);border-radius:20px;display:flex;justify-content:center;align-items:flex-end;position:relative;overflow:hidden}
+.stage svg.av{display:block}
+.stage .tag{position:absolute;left:10px;top:10px;background:#fff;border-radius:999px;padding:5px 10px;font-size:11px;font-weight:800;color:var(--green)}
+.steps3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0 4px}
+.steps3 div{background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px;font-size:11.5px;color:var(--muted)}.steps3 b{display:block;color:var(--ink);font-size:12.5px}
+.photo{position:relative;border-radius:18px;overflow:hidden;aspect-ratio:3/4;background-size:cover;background-position:center;background-color:#eadfd2}
+.photo.sm{aspect-ratio:4/3}.photo svg.demo{width:100%;height:100%;display:block}
+.box{position:absolute;border:2px solid var(--green);border-radius:8px;background:rgba(47,111,85,.10)}
+.box.q{border-color:var(--accent);background:rgba(196,92,58,.12);border-style:dashed}
+.box em{position:absolute;top:-10px;left:-6px;background:var(--green);color:#fff;font:800 10px Manrope;font-style:normal;width:18px;height:18px;border-radius:50%;display:grid;place-items:center}
+.box.q em{background:var(--accent)}
+.scan{position:absolute;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--accent),transparent);box-shadow:0 0 18px var(--accent);animation:sc 1.4s ease-in-out infinite}
+@keyframes sc{0%{top:4%}50%{top:94%}100%{top:4%}}
+.cam video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1);background:#2a241f}
+.cam .fr{position:absolute;inset:34px 30px;border:2px solid rgba(255,255,255,.75);border-radius:20px;pointer-events:none}
+.shutter{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);width:62px;height:62px;border-radius:50%;border:4px solid #fff;background:rgba(255,255,255,.25);cursor:pointer}
+.camerr{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#fff;padding:24px;background:#2a241f;font-size:13px}
+.choice{display:flex;gap:12px;align-items:center;width:100%;text-align:left;border:1px solid var(--line);background:#fff;border-radius:16px;padding:12px;margin-bottom:8px;cursor:pointer;color:var(--ink)}
+.choice.rec{border-color:var(--accent);background:#fff8f5}
+.choice .ic{width:42px;height:42px;border-radius:12px;background:var(--accent-soft);display:grid;place-items:center;font-size:20px;flex:none}
+.choice b{display:block;font-size:14px}.choice span{font-size:12px;color:var(--muted)}
+.pills{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 8px}
+.pills button,.opts button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 12px;font-size:12.5px;font-weight:700;cursor:pointer;color:var(--ink)}
+.pills button.on,.opts button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.sw{width:34px;height:34px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1.5px var(--line);cursor:pointer;padding:0}.sw.on{box-shadow:0 0 0 2.5px var(--ink)}
+.rows{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.row{display:flex;gap:10px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:16px;padding:8px;width:100%;text-align:left;color:var(--ink)}
+.row.sel{border-color:var(--green);background:#f6fbf8}
+.tile{width:56px;height:56px;border-radius:12px;background:#fff;border:1px solid #efe5da;display:grid;place-items:center;flex:none;position:relative;overflow:hidden}
+.tile svg{width:46px;height:46px;animation:pop .45s ease}
+@keyframes pop{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:none}}
+.tile.load::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,#f1e3d8 50%,transparent 70%);background-size:200% 100%;animation:sh 1s linear infinite}
+@keyframes sh{from{background-position:200% 0}to{background-position:-200% 0}}
+.tile.qm{background:var(--accent-soft);border:1px dashed var(--accent);color:var(--accent);font:800 22px Manrope}
+.row .t{flex:1;min-width:0}.row b{display:block;font-size:13.5px}.row .m{color:var(--muted);font-size:11.5px}
+.st{font-size:10.5px;font-weight:700;border-radius:999px;padding:4px 9px;white-space:nowrap;border:0}
+.st.ok{background:var(--green-soft);color:var(--green)}.st.wait{background:var(--accent-soft);color:#8a3d28;cursor:pointer}.st.ld{background:#f1ece5;color:var(--muted)}.st.new{background:var(--green);color:#fff}.st.pt{background:var(--accent-soft);color:#8a3d28}
+.nudge{margin-top:12px;background:#f4efe8;border:1px solid var(--line);border-radius:16px;padding:12px;display:flex;gap:8px;align-items:center}
+.nudge div{flex:1;font-size:12.5px;color:var(--muted)}.nudge div b{display:block;color:var(--ink);font-size:13px}
+.nudge button{border:0;border-radius:999px;padding:8px 12px;font-size:12px;font-weight:700;cursor:pointer}.nudge .go{background:var(--ink);color:#fff}.nudge .x{background:transparent;color:var(--muted);padding:8px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.gi{background:#fff;border:1px solid var(--line);border-radius:16px;padding:8px;text-align:left;cursor:pointer;color:var(--ink)}
+.gi .w{aspect-ratio:1;background:#fff;border-radius:12px;border:1px solid #f0e7de;display:grid;place-items:center}.gi .w svg{width:70%;height:70%}
+.gi b{display:block;font-size:12.5px;margin-top:6px}.gi span{font-size:11px;color:var(--muted)}
+.pf{background:#fff;border:1px solid var(--line);border-radius:16px;padding:4px 14px;margin-top:10px}
+.pf button{display:flex;justify-content:space-between;width:100%;border:0;background:none;padding:12px 0;border-bottom:1px solid #f1e9df;font-size:14px;font-weight:600;cursor:pointer;color:var(--ink)}
+.pf button:last-child{border:0}.pf em{font-style:normal;color:var(--muted)}.pf em.f{color:var(--green);font-weight:700}
+.strip{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px}
+.strip button{flex:none;border:1px solid var(--line);background:#fff;border-radius:14px;padding:4px;cursor:pointer}
+.prog{height:6px;background:#eadfd4;border-radius:99px;overflow:hidden;margin:6px 0 10px}.prog i{display:block;height:100%;background:var(--green)}
+.tabs{display:flex;gap:6px;margin-bottom:10px}.tabs button{flex:1;border:0;background:#efe6dc;border-radius:999px;padding:8px 4px;font-size:11.5px;font-weight:700;cursor:pointer;color:var(--ink)}.tabs button.on{background:var(--ink);color:#fff}
+.meta{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 2px}.meta span{background:#fff;border:1px solid var(--line);border-radius:999px;padding:4px 9px;font-size:11px;font-weight:700;color:var(--muted)}
+.dim{position:absolute;inset:0;background:rgba(28,23,20,.38);opacity:0;pointer-events:none;transition:.25s;z-index:5}.dim.on{opacity:1;pointer-events:auto}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius:24px 24px 0 0;padding:12px 16px 20px;box-shadow:0 -14px 40px rgba(0,0,0,.16);transform:translateY(105%);transition:transform .3s ease;z-index:6;max-height:80%;overflow-y:auto}
+.sheet.on{transform:none}.grab{width:42px;height:4px;background:#e4d8cc;border-radius:4px;margin:0 auto 12px}
+.sheet h3{margin:0 0 4px;font-size:18px}.sheet .why{color:var(--muted);font-size:12.5px;margin:0 0 10px}
+.opts{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-top:6px}
+input[type=text]{width:100%;border:1px solid var(--line);border-radius:12px;padding:11px 12px;font:600 14px Manrope;margin-top:6px;background:#fbf7f2}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.big{font-size:34px;font-weight:800;text-align:center;letter-spacing:-1px;margin:6px 0}
+.sw2{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0}
+.sw2 button{border:1px solid var(--line);background:#fff;border-radius:14px;padding:6px;cursor:pointer;color:var(--ink);font-size:11px;font-weight:700}.sw2 button .w{aspect-ratio:1;display:grid;place-items:center}.sw2 button svg{width:80%;height:80%}
+.line{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid #f1e9df}.line .t{flex:1}.line b{font-size:13px;display:block}.line span{font-size:11.5px;color:var(--muted)}
+.toast{position:absolute;left:16px;right:16px;top:58px;background:var(--ink);color:#fff;border-radius:14px;padding:10px 14px;font-size:12.5px;font-weight:700;z-index:9;opacity:0;transform:translateY(-8px);transition:.25s;pointer-events:none}.toast.on{opacity:1;transform:none}
+.proc{text-align:center;padding:14px 6px}.proc .l{font-size:13px;color:var(--muted);margin-top:10px}
+.pbar{height:5px;background:#eadfd4;border-radius:9px;overflow:hidden;margin-top:10px}.pbar i{display:block;height:100%;width:30%;background:var(--accent);animation:ld 1.2s ease-in-out infinite}@keyframes ld{50%{width:85%}}
+.side .kicker{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.side h1{font-size:34px;letter-spacing:-1px;line-height:1.05;margin:6px 0 10px}
+.side p.lead{color:var(--muted);max-width:620px;margin:0 0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px 20px;box-shadow:var(--shadow);margin-bottom:14px}.card h4{margin:0 0 10px;font-size:15px}
+.chk{list-style:none;margin:0;padding:0}.chk li{display:flex;gap:10px;font-size:13.5px;padding:5px 0;color:var(--muted)}
+.chk li i{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--line);flex:none;display:grid;place-items:center;font-style:normal;font-size:12px;font-weight:800}
+.chk li.ok{color:var(--ink)}.chk li.ok i{background:var(--green);border-color:var(--green);color:#fff}
+.chk li.cur{color:var(--ink);font-weight:700}.chk li.cur i{border-color:var(--accent);color:var(--accent)}
+pre{margin:0;font:12px/1.5 ui-monospace,Menlo,monospace;background:#1c1714;color:#f3e8dc;border-radius:12px;padding:12px;max-height:210px;overflow:auto;white-space:pre-wrap}
+.log div{font-size:12px;padding:4px 0;border-bottom:1px solid #f0e7de;color:#4d433c}.log{max-height:180px;overflow:auto}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.mini{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 12px;font-size:12px;font-weight:700;cursor:pointer;margin:0 6px 6px 0}
+@media(max-width:900px){.wrap{grid-template-columns:1fr}.phone{position:static;margin:0 auto}.two{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="phone"><div class="screen" id="screen"></div></div>
+  <div class="side">
+    <div class="kicker">LOOKSI · сквозной демо-стенд</div>
+    <h1>От онбординга до образа с новой вещью</h1>
+    <p class="lead">Путь: приветствие, модель, первая вещь, уточнение спорного, выбор главной вещи, образ на ней. Образ собирается из её шкафа и вещей партнёров. Недостающее ведёт к партнёру, размер спрашивается только в этот момент. Распознавание и примерка имитируются: образ рисуется на условной модели, не генерируется.</p>
+    <div class="card"><h4>Где мы в сценарии</h4><ul class="chk" id="chk"></ul></div>
+    <div class="card"><h4>Быстрые переходы</h4>
+      <button class="mini" data-act="jump" data-v="welcome">К началу</button>
+      <button class="mini" data-act="jump" data-v="demoCloset">Демо-шкаф и образ</button>
+      <button class="mini" data-act="jump" data-v="empty">Образ с пустым шкафом</button>
+      <button class="mini" id="reset">Сбросить стенд</button>
+    </div>
+    <div class="two">
+      <div class="card"><h4>Профиль</h4><pre id="pjson"></pre></div>
+      <div class="card"><h4>Текущий образ</h4><pre id="ljson"></pre></div>
+    </div>
+    <div class="card"><h4>События</h4><div class="log" id="log"></div></div>
+  </div>
+</div>
+<input type="file" id="file" accept="image/*" hidden>
+<input type="file" id="fileModel" accept="image/*" hidden>
+<script>
+const $=s=>document.querySelector(s);
+const ARTSLOT={top:'top',blouse:'top',shirt:'top',jacket:'outer',jeans:'bottom',trousers:'bottom',sneaker:'shoes',loafer:'shoes',bag:'bag',cap:'head',glasses:'face'};
+const SLOTN={top:'Верх',outer:'Верхняя одежда',bottom:'Низ',shoes:'Обувь',bag:'Сумка',head:'Головной убор',face:'Очки'};
+const SIZEKEY={top:'top',outer:'top',bottom:'bottom',shoes:'shoe'};
+const MET={height:{n:'Рост',u:'см',min:140,max:200,def:168,why:'Чтобы образ сидел по твоим пропорциям.'},
+weight:{n:'Вес',u:'кг',min:38,max:130,def:60,why:'Нужен только стилисту для посадки. Можно примерно.'},
+top:{n:'Размер верха',opts:['XS','S','M','L','XL','XXL'],why:'Чтобы не предлагать то, что не застегнётся.'},
+bottom:{n:'Размер низа',opts:['XS','S','M','L','XL','XXL'],why:'Для брюк, джинсов и юбок.'},
+shoe:{n:'Размер обуви',opts:['35','36','37','38','39','40','41'],why:'Чтобы партнёр показал только то, что есть в твоём размере.'}};
+const SKIN=['#f1d3bc','#e0b894','#b98562','#8a5a3c'],HAIR=['#2b1d16','#5b3a2a','#b58a52','#9a9a9a'];
+const ST='stroke="#1c1714" stroke-width="1.6" stroke-linejoin="round"';
+function inner(t,c){switch(t){
+case 'top':return `<path d="M30 20L42 14Q50 22 58 14L70 20L84 36L72 44L68 40V84H32V40L28 44L16 36Z" fill="${c}" ${ST}/>`;
+case 'blouse':return `<path d="M30 20L42 14Q50 24 58 14L70 20L84 36L72 44L68 40V84H32V40L28 44L16 36Z" fill="${c}" ${ST}/><path d="M50 24V84" stroke="#d8d0c6" stroke-width="1.2"/>`;
+case 'shirt':return `<path d="M30 20L42 14L50 26L58 14L70 20L84 36L72 44L68 40V84H32V40L28 44L16 36Z" fill="${c}" ${ST}/><path d="M50 26V84" stroke="#fff" stroke-width="1.4" stroke-dasharray="3 5"/>`;
+case 'jacket':return `<path d="M28 18L42 12L50 30L58 12L72 18L88 38L76 46L72 42V86H28V42L24 46L12 38Z" fill="${c}" ${ST}/><path d="M50 30V86" stroke="#d8d0c6" stroke-width="1.2"/>`;
+case 'jeans':return `<path d="M30 12H70L75 88H54L50 42L46 88H25Z" fill="${c}" ${ST}/><path d="M30 20H70" stroke="#fff" stroke-opacity=".5"/>`;
+case 'trousers':return `<path d="M28 12H72L79 88H55L50 40L45 88H21Z" fill="${c}" ${ST}/>`;
+case 'sneaker':return `<path d="M10 62Q12 44 30 46L40 54L54 49L86 60Q92 63 88 72H12Z" fill="${c}" ${ST}/><path d="M12 70H88" stroke="#fff" stroke-width="5"/>`;
+case 'loafer':return `<path d="M10 62Q12 50 30 50L52 52Q70 52 88 62Q92 70 86 72H12Z" fill="${c}" ${ST}/><path d="M12 70H88" stroke="#1c1714" stroke-width="4"/>`;
+case 'bag':return `<path d="M36 36Q36 14 50 14Q64 14 64 36" fill="none" ${ST}/><rect x="22" y="36" width="56" height="44" rx="8" fill="${c}" ${ST}/>`;
+case 'cap':return `<path d="M22 56Q22 26 50 26Q78 26 78 56Z" fill="${c}" ${ST}/><path d="M62 56H92Q90 64 78 64H62Z" fill="${c}" ${ST}/>`;
+case 'glasses':return `<circle cx="32" cy="52" r="15" fill="#e9eef0" fill-opacity=".6" ${ST}/><circle cx="68" cy="52" r="15" fill="#e9eef0" fill-opacity=".6" ${ST}/><path d="M47 50Q50 46 53 50" fill="none" ${ST}/>`;
+default:return `<rect x="20" y="20" width="60" height="60" fill="${c}"/>`}}
+const A=(t,c)=>`<svg viewBox="0 0 100 100">${inner(t,c)}</svg>`;
+function tone(hex){const n=parseInt(hex.slice(1),16),r=n>>16,g=(n>>8)&255,b=n&255,mx=Math.max(r,g,b),mn=Math.min(r,g,b);return(mx<70||(mx-mn)/mx<.22)?'n':'a'}
+
+const PART=[
+{id:'p1',name:'Кремовая блуза',brand:'Atelier 9',price:64,art:'blouse',color:'#f1e6d3'},
+{id:'p2',name:'Чёрный топ',brand:'NORD',price:28,art:'top',color:'#262321'},
+{id:'p3',name:'Терракотовый топ',brand:'NORD',price:34,art:'top',color:'#c4684a'},
+{id:'p4',name:'Рубашка в голубом',brand:'Atelier 9',price:72,art:'shirt',color:'#b9cfe0'},
+{id:'p5',name:'Прямые джинсы',brand:'NORD',price:79,art:'jeans',color:'#6f93b8'},
+{id:'p6',name:'Бежевые брюки',brand:'Maison Lune',price:92,art:'trousers',color:'#d8c3a5'},
+{id:'p7',name:'Чёрные брюки',brand:'Atelier 9',price:88,art:'trousers',color:'#2a2624'},
+{id:'p8',name:'Бежевый тренч',brand:'Maison Lune',price:189,art:'jacket',color:'#c9b394'},
+{id:'p9',name:'Чёрный жакет',brand:'Atelier 9',price:139,art:'jacket',color:'#2e2926'},
+{id:'p10',name:'Белые кеды',brand:'NORD',price:69,art:'sneaker',color:'#f6f3ee'},
+{id:'p11',name:'Коричневые лоферы',brand:'Atelier 9',price:119,art:'loafer',color:'#4a3428'},
+{id:'p12',name:'Сумка кроссбоди',brand:'Maison Lune',price:98,art:'bag',color:'#a8633f'},
+{id:'p13',name:'Чёрная сумка',brand:'NORD',price:85,art:'bag',color:'#242120'}
+].map(p=>({...p,slot:ARTSLOT[p.art],src:'partner'}));
+
+const CAT={
+1:[{id:'a1',name:'Белая блузка',cat:'top',art:'blouse',color:'#faf7f2',box:[14,16,72,66],ok:true}],
+2:[{id:'b1',name:'Тёмный жакет',cat:'outer',art:'jacket',color:'#3a3330',box:[31,22,37,31],ok:true},
+{id:'b2',name:'Белый топ',cat:'top',art:'top',color:'#f5f1ea',box:[43,25,14,22],ok:true},
+{id:'b3',name:'Голубые джинсы',cat:'bottom',art:'jeans',color:'#7fa0c4',box:[35,52,30,34],ok:true},
+{id:'b4',name:'Кроссовки',cat:'shoes',art:'sneaker',color:'#f4f1ec',box:[33,86,34,8],ok:false,ask:'brand'},
+{id:'b5',name:'Сумка',cat:'acc',art:'bag',color:'#9a6a4f',box:[17,47,16,15],ok:false,ask:'type',types:['Кроссбоди','Шоппер','Клатч','Рюкзак']}],
+3:[{id:'c1',name:'Рубашка',cat:'top',art:'shirt',color:'#cfe0ea',box:[18,55,64,45],ok:true},
+{id:'c2',name:'Кепка',cat:'acc',art:'cap',color:'#2f4a3a',box:[34,19,32,11],ok:false,ask:'brand'},
+{id:'c3',name:'Очки',cat:'acc',art:'glasses',color:'#222222',box:[36,33,28,7],ok:false,ask:'type',types:['Солнцезащитные','Для зрения']}]};
+const DEMO=[
+{id:'d1',name:'Белая блузка',art:'blouse',color:'#faf7f2'},
+{id:'d2',name:'Тёмный жакет',art:'jacket',color:'#3a3330'},
+{id:'d3',name:'Голубые джинсы',art:'jeans',color:'#7fa0c4'},
+{id:'d4',name:'Белые кроссовки',art:'sneaker',color:'#f4f1ec'},
+{id:'d5',name:'Коричневая сумка',art:'bag',color:'#9a6a4f'}
+].map(d=>({...d,slot:ARTSLOT[d.art],src:'closet',meta:'белый фон'}));
+const BR=['Zara','H&M','Mango','Nike','Adidas','Не знаю'];
+
+let S,stream=null,tt=null;
+function fresh(){stopCam();S={tab:'home',step:'welcome',scn:1,photo:null,items:[],closet:[],hero:null,looks:[],li:0,saved:[],viewSaved:false,
+model:{photo:null,skin:SKIN[0],hair:HAIR[1]},profile:{height:null,weight:null,top:null,bottom:null,shoe:null},snooze:{},
+sheet:null,draft:{},after:null,_shown:false,nudgeOff:false,camErr:false,toast:'',logs:[],tom:0,
+flow:{model:false,scan:false,clarify:false,look:false,mix:false,sizes:false,save:false,buy:false}}}
+fresh();
+const log=t=>{S.logs.unshift(t);if(S.logs.length>50)S.logs.pop()};
+function stopCam(){if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}}
+function filled(){return Object.values(S.profile).filter(Boolean).length}
+function toast(t){S.toast=t;render();clearTimeout(tt);tt=setTimeout(()=>{S.toast='';const e=$('.toast');if(e)e.classList.remove('on')},2300)}
+
+let uid=0;
+function avatar(slots,h){uid++;const u=uid,sk=S.model.skin,hr=S.model.hair;slots=slots||{};
+const g=(it,tx,ty,sx,sy)=>it?`<g transform="translate(${tx} ${ty}) scale(${sx} ${sy||sx})">${inner(it.art,it.color)}</g>`:'';
+let s=`<svg class="av" viewBox="0 0 200 400" height="${h||340}" width="${(h||340)/2}"><defs><clipPath id="hc${u}"><circle cx="100" cy="48" r="26"/></clipPath><clipPath id="st${u}"><rect x="84" y="90" width="32" height="130"/></clipPath></defs>`;
+s+=`<ellipse cx="100" cy="392" rx="62" ry="6" fill="rgba(60,40,25,.14)"/>`;
+s+=`<rect x="70" y="250" width="26" height="132" rx="12" fill="${sk}"/><rect x="104" y="250" width="26" height="132" rx="12" fill="${sk}"/>`;
+s+=`<rect x="28" y="92" width="16" height="118" rx="8" fill="${sk}"/><rect x="156" y="92" width="16" height="118" rx="8" fill="${sk}"/>`;
+s+=`<rect x="62" y="80" width="76" height="140" rx="22" fill="${sk}"/><rect x="90" y="66" width="20" height="24" fill="${sk}"/>`;
+if(!S.model.photo)s+=`<path d="M72 48Q70 14 100 14Q130 14 128 48L132 92Q120 70 100 70Q80 70 68 92Z" fill="${hr}"/>`;
+if(S.model.photo)s+=`<circle cx="100" cy="48" r="26" fill="${sk}"/><image href="${S.model.photo}" x="74" y="22" width="52" height="52" preserveAspectRatio="xMidYMid slice" clip-path="url(#hc${u})"/>`;
+else s+=`<circle cx="100" cy="48" r="26" fill="${sk}"/><path d="M76 40Q100 14 126 40Q110 28 76 40Z" fill="${hr}"/><circle cx="92" cy="50" r="1.8" fill="#1c1714"/><circle cx="108" cy="50" r="1.8" fill="#1c1714"/><path d="M93 60Q100 65 107 60" fill="none" stroke="#a5604a" stroke-width="1.6"/>`;
+s+=g(slots.bottom,5,145,1.9,2.25);
+if(slots.outer){s+=g(slots.outer,7.5,62,1.85);if(slots.top)s+=`<g clip-path="url(#st${u})">${g(slots.top,17.5,65,1.65)}</g>`}
+else s+=g(slots.top,17.5,65,1.65);
+s+=g(slots.shoes,52,335,.6,.6);
+if(slots.shoes)s+=`<g transform="translate(148 335) scale(-.6 .6)">${inner(slots.shoes.art,slots.shoes.color)}</g>`;
+s+=g(slots.bag,4,180,.8);s+=g(slots.head,57,4,.75);s+=g(slots.face,75,22,.5);
+return s+'</svg>'}
+
+function demoSvg(){
+if(S.scn===1)return `<svg class="demo" viewBox="0 0 300 400"><rect width="300" height="400" fill="#d9c8b8"/><rect y="250" width="300" height="150" fill="#c9b4a2"/><g transform="translate(55 110) scale(2.1)"><path d="M30 20L42 14Q50 24 58 14L70 20L84 36L72 44L68 40V84H32V40L28 44L16 36Z" fill="#faf7f2" stroke="#8a7766" stroke-width="1.2"/></g></svg>`;
+if(S.scn===2)return `<svg class="demo" viewBox="0 0 300 400"><rect width="300" height="400" fill="#e9ddd1"/><rect y="372" width="300" height="28" fill="#d6c5b5"/><circle cx="150" cy="52" r="24" fill="#e8c4a8"/><path d="M124 50Q124 22 152 24Q178 26 176 56L172 80Q168 56 152 54Q136 54 130 80Z" fill="#5b3a2a"/><rect x="95" y="86" width="110" height="124" rx="16" fill="#3a3330"/><path d="M131 90H169V190H131Z" fill="#f5f1ea"/><path d="M105 210H195L190 345H156L150 250L144 345H110Z" fill="#7fa0c4"/><ellipse cx="128" cy="360" rx="26" ry="11" fill="#f4f1ec" stroke="#cfc6ba"/><ellipse cx="174" cy="360" rx="26" ry="11" fill="#f4f1ec" stroke="#cfc6ba"/><rect x="52" y="188" width="46" height="46" rx="9" fill="#9a6a4f"/><path d="M62 188Q62 168 75 168Q88 168 88 188" fill="none" stroke="#1c1714" stroke-width="3"/></svg>`;
+return `<svg class="demo" viewBox="0 0 300 400"><rect width="300" height="400" fill="#dfd2c4"/><path d="M40 400Q40 250 150 230Q260 250 260 400Z" fill="#cfe0ea"/><circle cx="150" cy="150" r="52" fill="#e8c4a8"/><path d="M104 140Q106 98 150 98Q196 98 196 140Q180 122 150 122Q122 122 104 140Z" fill="#5b3a2a"/><path d="M102 118Q102 84 150 84Q198 84 198 118Z" fill="#2f4a3a"/><path d="M180 112H228Q226 124 206 126H180Z" fill="#2f4a3a"/><circle cx="130" cy="150" r="13" fill="#e9eef0" fill-opacity=".5" stroke="#222" stroke-width="3"/><circle cx="170" cy="150" r="13" fill="#e9eef0" fill-opacity=".5" stroke="#222" stroke-width="3"/><path d="M143 150H157" stroke="#222" stroke-width="3"/><path d="M138 184Q150 194 162 184" fill="none" stroke="#a5604a" stroke-width="3"/></svg>`}
+function photoHtml(o={}){
+const boxes=o.boxes?S.items.map((it,i)=>`<div class="box ${it.status==='ask'?'q':''}" style="left:${it.box[0]}%;top:${it.box[1]}%;width:${it.box[2]}%;height:${it.box[3]}%"><em>${i+1}</em></div>`).join(''):'';
+const scan=o.scan?'<div class="scan"></div>':'';
+if(S.photo)return `<div class="photo ${o.sm?'sm':''}" style="background-image:url('${S.photo}')">${boxes}${scan}</div>`;
+return `<div class="photo ${o.sm?'sm':''}">${demoSvg()}${boxes}${scan}</div>`}
+
+function topBar(t){const p=Math.round(filled()/5*360);
+return `<div class="bar"><b>${t}</b><button class="pc" data-act="tab" data-v="profile"><span class="ring" style="background:conic-gradient(var(--green) ${p}deg,#eadfd4 0)"><i></i></span>Профиль ${filled()}/5</button></div>`}
+const dots=n=>`<div class="dots">${[1,2,3].map(i=>`<i class="${i<=n?'on':''}"></i>`).join('')}</div>`;
+
+function welcome(){const sl={top:DEMO[0],bottom:DEMO[2],shoes:DEMO[3],outer:DEMO[1]};
+return `<div class="body" style="padding-top:12px"><div class="stage" style="height:330px;padding-top:12px">${avatar(sl,320)}<div class="tag">пример образа</div></div>
+<h2 style="margin-top:14px">Покажем тебя в образе с твоей вещью</h2><p class="sub">Сними одну вещь. Остальное соберём из твоего шкафа и вещей магазинов-партнёров.</p>
+<div class="steps3"><div><b>1</b>Твоя модель</div><div><b>2</b>Первая вещь</div><div><b>3</b>Образ на тебе</div></div>
+<button class="btn accent" data-act="start">Начать</button><button class="ghost" data-act="demoStart">Смотреть на демо-шкафу</button></div>`}
+function modelStep(){return `${dots(1)}<h2>Твоя модель</h2><p class="sub">На ней будем собирать образы. Фото можно пропустить и выбрать тон.</p>
+<div class="stage" style="height:250px;padding-top:8px">${avatar({top:DEMO[0],bottom:DEMO[2],shoes:DEMO[3]},240)}</div>
+<button class="btn sm" data-act="uploadModel">${S.model.photo?'Заменить фото':'Загрузить своё фото'}</button>
+<div class="lbl" style="margin-top:12px">Тон кожи</div><div class="pills">${SKIN.map(c=>`<button class="sw ${S.model.skin===c?'on':''}" style="background:${c}" data-act="skin" data-v="${c}"></button>`).join('')}</div>
+<div class="lbl">Волосы</div><div class="pills">${HAIR.map(c=>`<button class="sw ${S.model.hair===c?'on':''}" style="background:${c}" data-act="hair" data-v="${c}"></button>`).join('')}</div>
+<button class="btn accent" data-act="modelNext">${S.onboarded?'Готово':'Дальше'}</button>`}
+function addStep(){return `${dots(2)}<h2>Добавь первую вещь</h2><p class="sub">Хватит одной. Выбери самый лёгкий путь.</p>
+<button class="choice rec" data-act="entry" data-v="selfie"><div class="ic">📷</div><div><b>Уже надето — селфи</b><span>Самый быстрый. Разберём все вещи на тебе.</span></div></button>
+<button class="choice" data-act="entry" data-v="flat"><div class="ic">👚</div><div><b>Фото одной вещи</b><span>На кровати или вешалке.</span></div></button>
+<button class="choice" data-act="entry" data-v="gallery"><div class="ic">🖼</div><div><b>Фото из галереи</b><span>Образ, где ты уже одета.</span></div></button>
+<div class="lbl">Нет под рукой? Демо</div><div class="pills"><button data-act="demoScan" data-v="3">Демо-селфи</button><button data-act="demoScan" data-v="1">Демо-вещь</button><button data-act="demoScan" data-v="2">Демо-фото</button></div>`}
+function cameraStep(){return `<div class="photo cam"><video id="cam" autoplay playsinline muted></video><div class="fr"></div>${S.camErr?`<div class="camerr"><b>Камера недоступна</b><span style="margin:6px 0 12px">Браузер не дал доступ. Продолжим на демо-селфи.</span><button class="btn accent" style="width:auto;padding:10px 18px" data-act="demoScan" data-v="3">Демо-селфи</button></div>`:`<button class="shutter" data-act="shot"></button>`}</div><p class="sub" style="margin-top:10px">Встань так, чтобы был виден образ. Кадр никуда не уходит — это демо.</p>`}
+function scanning(){return `${photoHtml({scan:true})}<div class="proc"><b>Ищем вещи</b><div class="pbar"><i></i></div><div class="l">Определяем категории, цвет, вырезаем фон</div></div>`}
+function rowHtml(it,sel){let tile,st;
+if(it.status==='ask'){tile=`<div class="tile qm">?</div>`;st=`<span class="st wait" data-act="ask" data-id="${it.id}">Уточнить</span>`}
+else if(it.status==='ready'){tile=`<div class="tile">${A(it.art,it.color)}</div>`;st=sel?`<span class="st new">Главная</span>`:`<span class="st ok">В шкафу</span>`}
+else{tile=`<div class="tile load"></div>`;st=`<span class="st ld">Рисуем…</span>`}
+return `<button class="row ${sel?'sel':''}" data-act="hero" data-id="${it.id}">${tile}<div class="t"><b>${it.name}</b><span class="m">${it.meta||''}</span></div>${st}</button>`}
+function review(){const pend=S.items.filter(i=>i.status==='ask').length;const hero=S.hero;
+return `${dots(3)}<h2>${pend?'Почти готово':'Вещи в шкафу'}</h2><p class="sub">${pend?'Уверенные уже в шкафу. По остальным один вопрос снизу.':'Выбери главную вещь — соберём вокруг неё образ.'}</p>
+${S.scn===1?'':photoHtml({boxes:true,sm:true})}<div class="rows">${S.items.map(i=>rowHtml(i,hero&&hero.id===i.id)).join('')}</div>
+${hero&&hero.status==='ready'?`<button class="btn accent" data-act="build">Собрать образ с «${hero.name}»</button>`:''}`}
+function building(){return `<div class="proc" style="padding-top:60px"><div class="stage" style="height:260px;padding-top:10px;opacity:.9">${avatar({[S.hero.slot]:S.hero},250)}</div><h2 style="margin-top:16px">Собираем образ</h2><div class="pbar"><i></i></div><div class="l" id="bmsg">Смотрим твой шкаф…</div></div>`}
+
+function pieces(L){const order=['outer','top','bottom','shoes','bag','head','face'];return order.filter(s=>L.slots[s]).map(s=>[s,L.slots[s]])}
+function badge(it,L){if(it.id===L.heroId)return `<span class="st new">Новая вещь</span>`;return it.src==='partner'?`<span class="st pt">${it.brand} · $${it.price}</span>`:`<span class="st ok">Из шкафа</span>`}
+function lookStats(L){const ps=pieces(L).map(x=>x[1]);const own=ps.filter(i=>i.src==='closet'&&i.id!==L.heroId).length,pt=ps.filter(i=>i.src==='partner'),tot=pt.reduce((a,b)=>a+b.price,0);return{own,pt,tot}}
+function lookScreen(){const L=S.looks[S.li];if(!L)return '';const st=lookStats(L);const k=(!S.profile.height&&!S.nudgeOff&&!S.snooze.height)?'height':null;
+return `${S.looks.length>1?`<div class="tabs">${S.looks.map((l,i)=>`<button class="${i===S.li?'on':''}" data-act="lookTab" data-v="${i}">${l.name}</button>`).join('')}</div>`:''}
+<div class="stage" style="height:350px;padding-top:10px">${avatar(L.slots,340)}<div class="tag">${L.slots[S.looks[S.li].heroSlot]&&L.heroId?'с твоей новой вещью':''}</div></div>
+<div class="meta"><span>Из шкафа: ${st.own}</span><span>Партнёры: ${st.pt.length}</span>${st.tot?`<span>Докупить: $${st.tot}</span>`:''}</div>
+<div class="rows">${pieces(L).map(([s,it])=>`<button class="row" data-act="swap" data-slot="${s}"><div class="tile">${A(it.art,it.color)}</div><div class="t"><b>${it.name}</b><span class="m">${SLOTN[s]}${it.id===L.heroId?'':' · нажми, чтобы заменить'}</span></div>${badge(it,L)}</button>`).join('')}</div>
+${S.viewSaved?'':`<button class="btn accent" data-act="savelook">Сохранить образ</button>`}
+${st.pt.length?`<button class="ghost" data-act="buy">Докупить у партнёров · $${st.tot}</button>`:''}
+${S.viewSaved?`<button class="ghost" data-act="home">На главную</button>`:`<button class="ghost" data-act="rebuild">Другая главная вещь</button>`}
+${k?`<div class="nudge"><div><b>Совет стилиста</b>Добавь рост — подберём посадку точнее.</div><button class="go" data-act="metric" data-k="height">Добавить</button><button class="x" data-act="nudgeoff">Позже</button></div>`:''}`}
+
+function homeScreen(){const n=S.closet.length;
+return `<h2>${S.saved.length?'Твои образы':'Главная'}</h2>
+${S.saved.length?`<div class="strip">${S.saved.map((l,i)=>`<button data-act="openlook" data-v="${i}"><div class="stage" style="width:92px;height:170px;border-radius:12px">${avatar(l.slots,166)}</div></button>`).join('')}</div>`:`<p class="sub">Пока нет сохранённых образов.</p>`}
+<div class="lbl" style="margin-top:12px">Шкаф: ${n} из 5 для точных образов</div><div class="prog"><i style="width:${Math.min(100,n/5*100)}%"></i></div>
+<button class="btn accent" data-act="addmore">Добавить вещь</button>
+${n?`<button class="ghost" data-act="tomorrow">Образ на завтра</button>`:''}
+${n&&!S.profile.height?`<div class="nudge"><div><b>Стилисту не хватает роста</b>10 секунд, можно пропустить.</div><button class="go" data-act="metric" data-k="height">Добавить</button></div>`:''}`}
+function closetScreen(){return `<h2>Шкаф</h2>${S.closet.length?`<p class="sub">Нажми на вещь — соберём образ с ней.</p><div class="grid">${S.closet.map(i=>`<button class="gi" data-act="item" data-id="${i.id}"><div class="w">${A(i.art,i.color)}</div><b>${i.name}</b><span>${i.meta||''}</span></button>`).join('')}</div>`:`<p class="sub">Пока пусто. Добавь первую вещь на главной.</p>`}`}
+function profileScreen(){return `<h2>Профиль стилиста</h2><p class="sub">Заполняй по одному и когда удобно. Всё подтягивается в подбор.</p>
+<div class="pf"><button data-act="editModel"><span>Моя модель</span><em class="f">${S.model.photo?'с фото':'без фото'}</em></button>${Object.keys(MET).map(k=>`<button data-act="metric" data-k="${k}"><span>${MET[k].n}</span><em class="${S.profile[k]?'f':''}">${S.profile[k]?S.profile[k]+(MET[k].u?' '+MET[k].u:''):'добавить'}</em></button>`).join('')}</div>`}
+
+function body(){
+if(S.tab==='closet')return topBar('Шкаф')+`<div class="body">${closetScreen()}</div>`;
+if(S.tab==='profile')return topBar('Профиль')+`<div class="body">${profileScreen()}</div>`;
+switch(S.step){
+case 'welcome':return welcome();
+case 'model':return `<div class="body" style="padding-top:12px">${modelStep()}</div>`;
+case 'add':return topBar('Первая вещь')+`<div class="body">${addStep()}</div>`;
+case 'camera':return topBar('Камера')+`<div class="body">${cameraStep()}</div>`;
+case 'scanning':return topBar('Смотрим кадр')+`<div class="body">${scanning()}</div>`;
+case 'review':return topBar('Результат')+`<div class="body">${review()}</div>`;
+case 'building':return `<div class="body">${building()}</div>`;
+case 'look':return topBar(S.viewSaved?'Сохранённый образ':'Твой новый образ')+`<div class="body">${lookScreen()}</div>`;
+default:return topBar('Главная')+`<div class="body">${homeScreen()}</div>`}}
+const showNav=()=>!['welcome','model'].includes(S.step)||S.tab!=='home';
+
+function sheetHtml(cls){const sh=S.sheet;if(!sh)return '<div class="sheet"></div>';let c='';
+if(sh.type==='ask'){const it=S.items.find(i=>i.id===sh.id),d=S.draft;
+c=`<h3>Уточни вещь</h3><p class="why">${it.ask==='type'?'Не уверены, что это за вещь.':'Вещь ясна, но бренд не считывается.'} Остальное уже в шкафу.</p>
+${it.ask==='type'?`<div class="lbl">Что это</div><div class="opts">${it.types.map(t=>`<button class="${d.name===t?'on':''}" data-act="pick" data-f="name" data-v="${t}">${t}</button>`).join('')}</div>`:''}
+<div class="lbl">Бренд</div><div class="opts">${BR.map(t=>`<button class="${d.brand===t?'on':''}" data-act="pick" data-f="brand" data-v="${t}">${t}</button>`).join('')}</div>
+<input type="text" id="brandIn" placeholder="Или впиши бренд" value="${d.custom||''}">
+<button class="btn accent" data-act="askok">Готово</button><button class="ghost" data-act="askskip">Пропустить, положить как есть</button>`}
+else if(sh.type==='metric'){const m=MET[sh.k],v=S.draft.v;
+const ctl=m.opts?`<div class="opts">${m.opts.map(o=>`<button class="${v===o?'on':''}" data-act="pickm" data-v="${o}">${o}</button>`).join('')}</div>`:`<div class="big"><span id="mv">${v}</span> ${m.u}</div><input type="range" id="mr" min="${m.min}" max="${m.max}" value="${v}">`;
+c=`<h3>${m.n}</h3><p class="why">${m.why} Один вопрос, остальное позже.</p>${ctl}<button class="btn accent" data-act="metricok">Сохранить в профиль</button><button class="ghost" data-act="metricskip">Не сейчас</button>`}
+else if(sh.type==='swap'){const L=S.looks[S.li],cur=L.slots[sh.slot];
+const opts=S.closet.filter(i=>i.slot===sh.slot&&i.id!==(cur&&cur.id)).concat(PART.filter(p=>p.slot===sh.slot&&p.id!==(cur&&cur.id)));
+c=`<h3>Заменить: ${SLOTN[sh.slot].toLowerCase()}</h3><p class="why">Из твоего шкафа и из магазинов партнёров (демо-каталог).</p>
+<div class="sw2">${opts.map(i=>`<button data-act="swapto" data-id="${i.id}"><div class="w">${A(i.art,i.color)}</div>${i.name}<br><span style="color:var(--muted)">${i.src==='partner'?i.brand+' · $'+i.price:'Из шкафа'}</span></button>`).join('')||'<p class="why">Других вариантов пока нет.</p>'}</div>
+${['outer','bag','head','face'].includes(sh.slot)?`<button class="ghost" data-act="swapnone">Убрать из образа</button>`:''}`}
+else if(sh.type==='buy'){const L=S.looks[S.li],st=lookStats(L);
+const miss=st.pt.map(p=>SIZEKEY[p.slot]).filter(k=>k&&!S.profile[k]);
+c=`<h3>Докупить у партнёров</h3><p class="why">Покажем наличие в твоём размере.</p>
+${st.pt.map(p=>{const k=SIZEKEY[p.slot];return `<div class="line"><div class="tile">${A(p.art,p.color)}</div><div class="t"><b>${p.name}</b><span>${p.brand} · ${k?(S.profile[k]?'размер '+S.profile[k]+' в наличии':'размер не указан'):'без размера'}</span></div><b>$${p.price}</b></div>`}).join('')}
+<div class="line"><div class="t"><b>Итого</b></div><b>$${st.tot}</b></div>
+${miss.length?`<button class="btn accent" data-act="needsize" data-k="${miss[0]}">Указать ${MET[miss[0]].n.toLowerCase()}</button>`:`<button class="btn accent" data-act="buyGo">Перейти к партнёру</button>`}
+<button class="ghost" data-act="close">Закрыть</button>`}
+else if(sh.type==='item'){const it=S.closet.find(i=>i.id===sh.id);
+c=`<div style="display:flex;gap:12px;align-items:center"><div class="tile" style="width:76px;height:76px">${A(it.art,it.color)}</div><div><h3>${it.name}</h3><p class="why" style="margin:0">${it.meta||''}</p></div></div><button class="btn accent" data-act="itemlook" data-id="${it.id}">Собрать образ с этой вещью</button><button class="ghost" data-act="close">Закрыть</button>`}
+return `<div class="sheet ${cls}"><div class="grab"></div>${c}</div>`}
+
+function render(){
+const sc=$('#screen');
+const cam=S.tab==='home'&&S.step==='camera'&&!S.camErr;
+const keep=cam&&$('#cam')&&sc.dataset.cam==='1'&&!S.sheet;
+if(!S.sheet)S._shown=false;
+if(!keep){
+sc.innerHTML=`<div class="notch"></div><div class="col">${body()}</div>${showNav()?`<div class="nav"><button data-act="tab" data-v="home" class="${S.tab==='home'?'on':''}">Главная</button><button data-act="tab" data-v="closet" class="${S.tab==='closet'?'on':''}">Шкаф · ${S.closet.length}</button><button data-act="tab" data-v="profile" class="${S.tab==='profile'?'on':''}">Профиль</button></div>`:''}<div class="dim ${S.sheet&&S._shown?'on':''}" data-act="dimclose"></div>${sheetHtml(S._shown?'on':'')}<div class="toast ${S.toast?'on':''}">${S.toast}</div>`;
+sc.dataset.cam=cam?'1':'0';
+if(cam&&stream){const v=$('#cam');if(v){v.srcObject=stream;v.play().catch(()=>{})}}
+if(S.sheet&&!S._shown){S._shown=true;requestAnimationFrame(()=>requestAnimationFrame(()=>{const s=$('.sheet'),d=$('.dim');if(s)s.classList.add('on');if(d)d.classList.add('on')}))}
+}
+side()}
+
+function side(){
+const L=S.looks[S.li];
+const hasMix=S.flow.mix;
+const items=[
+['Онбординг: приветствие и модель',S.flow.model,S.step==='welcome'||S.step==='model'],
+['Первая вещь распознана и в шкафу',S.closet.some(i=>i.src==='closet')&&S.flow.scan,S.step==='add'||S.step==='camera'||S.step==='scanning'],
+['Спорное уточнено в шторке',S.flow.clarify,S.step==='review'],
+['Образ с новой вещью на модели',S.flow.look,S.step==='building'||S.step==='look'],
+['Образ из шкафа и вещей партнёров',hasMix,false],
+['Размер спрошен в момент покупки',S.flow.sizes,false],
+['Образ сохранён',S.flow.save,false],
+['Переход к партнёру',S.flow.buy,false]];
+$('#chk').innerHTML=items.map(x=>`<li class="${x[1]?'ok':x[2]?'cur':''}"><i>${x[1]?'✓':''}</i>${x[0]}</li>`).join('');
+$('#pjson').textContent=JSON.stringify(S.profile,null,1);
+$('#ljson').textContent=L?JSON.stringify({look:L.name,hero:L.heroId,pieces:pieces(L).map(([s,i])=>({slot:s,name:i.name,source:i.id===L.heroId?'new':i.src,price:i.price||null}))},null,1):'—';
+$('#log').innerHTML=S.logs.map(l=>`<div>${l}</div>`).join('')}
+
+/* --- распознавание --- */
+function startScan(){stopCam();S.step='scanning';S.tab='home';S.items=[];S.hero=null;S.photo=S.photo;render();
+setTimeout(()=>{if(S.step!=='scanning')return;
+S.items=CAT[S.scn].map(i=>({...i,slot:ARTSLOT[i.art],src:'closet',status:i.ok?'detected':'ask',meta:i.ok?'уверенность '+(90+Math.floor(Math.random()*8))+'%':'нужно уточнить'}));
+S.step='review';S.flow.scan=true;
+log(`scan.detect · вещей ${S.items.length}, сомнений ${S.items.filter(i=>!i.ok).length}`);render();
+const ok=S.items.filter(i=>i.ok);ok.forEach((it,n)=>setTimeout(()=>commit(it),350+n*320));
+const q=S.items.find(i=>!i.ok);if(q)setTimeout(()=>openAsk(q.id),900+ok.length*320);
+else S.flow.clarify=S.flow.clarify}
+,1800)}
+function commit(it){if(it.status==='ready'||it.status==='rendering')return;it.status='rendering';render();
+setTimeout(()=>{it.status='ready';if(!S.closet.find(c=>c.id===it.id))S.closet.push({id:it.id,name:it.name,art:it.art,color:it.color,slot:it.slot,brand:it.brand||null,src:'closet',meta:(it.brand?it.brand+' · ':'')+'белый фон'});
+if(!S.hero&&S.step==='review'&&it.ok)S.hero=it;
+log(`closet.add · ${it.name}${it.brand?' · '+it.brand:''}`);render()},850)}
+function openAsk(id){const it=S.items.find(i=>i.id===id);if(!it||it.status!=='ask')return;S.draft={name:null,brand:null,custom:''};S.sheet={type:'ask',id};log(`sheet.ask · ${it.name} (${it.ask})`);render()}
+function nextAsk(){const q=S.items.find(i=>i.status==='ask');if(q)setTimeout(()=>openAsk(q.id),500)}
+function openMetric(k,after){const m=MET[k];S.draft={v:S.profile[k]||(m.opts?null:m.def)};S.sheet={type:'metric',k};S.after=after||null;log(`sheet.metric · ${k}`);render()}
+
+/* --- сборка образа --- */
+function pickFor(chosen,pool,offset){const acc=Object.values(chosen).filter(x=>x&&tone(x.color)==='a').length;
+const sc=pool.map((it,i)=>{let s=0;if(tone(it.color)==='n')s+=2;else s+=acc>=1?-3:1;return{it,s,i}});sc.sort((a,b)=>b.s-a.s||a.i-b.i);return sc.length?sc[offset%sc.length].it:null}
+function makeSlots(hero,mode){const sl={};sl[hero.slot]=hero;
+const need=['bottom','top','shoes'];
+const own=s=>S.closet.filter(c=>c.slot===s&&c.id!==hero.id),par=s=>PART.filter(p=>p.slot===s);
+['bottom','top','shoes','outer','bag'].filter(s=>s!==hero.slot).forEach(s=>{
+const req=need.includes(s);let it=null;
+if(mode==='own')it=pickFor(sl,own(s),0)||(req?pickFor(sl,par(s),0):null);
+else if(mode==='mix'){it=(s==='shoes'||s==='bag')?pickFor(sl,par(s),0):(pickFor(sl,own(s),0)||(req?pickFor(sl,par(s),0):null));if(!it)it=pickFor(sl,own(s),0)}
+else{it=(s==='top'||s==='outer')?pickFor(sl,par(s),1):(pickFor(sl,own(s),0)||(req?pickFor(sl,par(s),1):null))}
+if(it)sl[s]=it});
+if(mode==='bold'&&!sl.outer&&hero.slot!=='outer')sl.outer=pickFor(sl,par('outer'),0);
+return sl}
+function makeLooks(hero){const defs=[['Из шкафа','own'],['С одной покупкой','mix'],['Смелее','bold']];const seen={},out=[];
+defs.forEach(([n,m])=>{const sl=makeSlots(hero,m);const sig=JSON.stringify(Object.keys(sl).sort().map(k=>k+sl[k].id));if(seen[sig])return;seen[sig]=1;out.push({name:n,slots:sl,heroId:hero.id,heroSlot:hero.slot})});return out}
+function startBuild(){if(!S.hero)return;S.tab='home';S.step='building';S.viewSaved=false;S.nudgeOff=false;render();
+const msgs=['Смотрим твой шкаф…','Проверяем магазины партнёров…','Собираем на твоей модели…'];msgs.forEach((m,i)=>setTimeout(()=>{if(S.step!=='building')return;const e=$('#bmsg');if(e)e.textContent=m},i*650));
+setTimeout(()=>{if(S.step!=='building')return;S.looks=makeLooks(S.hero);S.li=0;S.step='look';S.flow.look=true;
+log(`look.build · главная вещь: ${S.hero.name} · вариантов ${S.looks.length}`);checkMix();render()},2000)}
+function checkMix(){const L=S.looks[S.li];if(!L)return;const ps=pieces(L).map(x=>x[1]);if(ps.some(i=>i.src==='closet'&&i.id!==L.heroId)&&ps.some(i=>i.src==='partner'))S.flow.mix=true;else if(S.looks.some(l=>{const p=pieces(l).map(x=>x[1]);return p.some(i=>i.src==='closet'&&i.id!==l.heroId)&&p.some(i=>i.src==='partner')}))S.flow.mix=true}
+
+/* --- события --- */
+document.addEventListener('click',e=>{
+const t=e.target.closest('[data-act]');if(!t)return;const a=t.dataset.act,v=t.dataset.v;
+if(a==='tab'){if(v!=='home')stopCam();S.tab=v;if(v==='home'&&S.step==='camera'&&!stream&&!S.camErr)S.step='add';render()}
+else if(a==='start'){S.step='model';log('onboarding.start');render()}
+else if(a==='demoStart'){S.closet=DEMO.map(d=>({...d}));S.flow.scan=true;S.step='model';log('demo.closet · 5 вещей');render()}
+else if(a==='uploadModel'){$('#fileModel').click()}
+else if(a==='skin'){S.model.skin=v;render()}
+else if(a==='hair'){S.model.hair=v;render()}
+else if(a==='modelNext'){S.flow.model=true;log('model.saved · '+(S.model.photo?'с фото':'без фото'));
+if(S.onboarded){S.tab='profile';S.step='home'}else{S.onboarded=true;S.step=S.closet.length?'home':'add'}
+if(S.closet.length&&!S.saved.length&&S.step==='home'&&!S.tab.length){}
+render()}
+else if(a==='entry'){if(v==='selfie'){S.scn=3;openCamera()}else{S.scn=v==='flat'?1:2;$('#file').click()}}
+else if(a==='demoScan'){S.scn=+v;S.photo=null;S.camErr=false;log('demo.scan · сценарий '+v);startScan()}
+else if(a==='shot'){capture()}
+else if(a==='hero'){const it=S.items.find(i=>i.id===t.dataset.id);if(it&&it.status==='ready'){S.hero=it;log('hero.select · '+it.name);render()}else if(it&&it.status==='ask')openAsk(it.id)}
+else if(a==='ask'){e.stopPropagation();openAsk(t.dataset.id)}
+else if(a==='build'){log('build.start · '+S.hero.name);startBuild()}
+else if(a==='pick'){S.draft[t.dataset.f]=v;if(t.dataset.f==='brand')S.draft.custom='';render()}
+else if(a==='askok'||a==='askskip'){const it=S.items.find(i=>i.id===S.sheet.id),d=S.draft;
+if(a==='askok'){const inp=$('#brandIn'),custom=inp?inp.value.trim():'';if(d.name)it.name=d.name;const br=custom||(d.brand&&d.brand!=='Не знаю'?d.brand:null);if(br)it.brand=br;it.meta=[br,d.name].filter(Boolean).join(' · ')||'уточнено';log(`ask.answer · ${it.name}${br?' · '+br:''}`)}
+else{it.meta='уточнение пропущено';log('ask.skip · '+it.name)}
+S.flow.clarify=true;S.sheet=null;it.status='detected';commit(it);nextAsk()}
+else if(a==='metric'){openMetric(t.dataset.k,null)}
+else if(a==='needsize'){S.sheet=null;openMetric(t.dataset.k,'buy')}
+else if(a==='pickm'){S.draft.v=v;render()}
+else if(a==='metricok'){const k=S.sheet.k;if(!S.draft.v){toast('Выбери значение или нажми «Не сейчас»');return}
+S.profile[k]=S.draft.v;S.flow.sizes=S.flow.sizes||['top','bottom','shoe'].includes(k);log(`profile.sync · ${k} = ${S.draft.v}`);
+const back=S.after==='buy';S.after=null;S.sheet=back?{type:'buy'}:null;if(!back){toast('Синхронизировано с профилем')}else{render()}}
+else if(a==='metricskip'){S.snooze[S.sheet.k]=true;log('profile.snooze · '+S.sheet.k);const back=S.after==='buy';S.after=null;S.sheet=back?{type:'buy'}:null;render()}
+else if(a==='nudgeoff'){S.nudgeOff=true;S.snooze.height=true;log('nudge.dismiss');render()}
+else if(a==='lookTab'){S.li=+v;checkMix();render()}
+else if(a==='swap'){const L=S.looks[S.li],it=L.slots[t.dataset.slot];if(it&&it.id===L.heroId){toast('Это твоя новая вещь — вокруг неё собран образ');return}S.sheet={type:'swap',slot:t.dataset.slot};render()}
+else if(a==='swapto'){const L=S.looks[S.li],slot=S.sheet.slot;const it=S.closet.find(i=>i.id===t.dataset.id&&i.slot===slot)||PART.find(i=>i.id===t.dataset.id);L.slots[slot]=it;log(`look.swap · ${slot} → ${it.name}`);checkMix();S.sheet=null;render()}
+else if(a==='swapnone'){const L=S.looks[S.li];delete L.slots[S.sheet.slot];S.sheet=null;render()}
+else if(a==='buy'){S.sheet={type:'buy'};render()}
+else if(a==='buyGo'){const st=lookStats(S.looks[S.li]);S.flow.buy=true;log(`partner.redirect · ${st.pt.map(p=>p.brand).filter((x,i,r)=>r.indexOf(x)===i).join(', ')} · $${st.tot} · utm=looksi_look`);S.sheet=null;toast('Открываем магазины партнёров (в демо без перехода)')}
+else if(a==='close'||(a==='dimclose'&&S.sheet&&S.sheet.type!=='ask'&&S.sheet.type!=='metric')){S.sheet=null;render()}
+else if(a==='savelook'){const L=S.looks[S.li];S.saved.push(JSON.parse(JSON.stringify(L)));S.flow.save=true;log('look.save · '+L.name);S.step='home';S.tab='home';toast('Образ сохранён');}
+else if(a==='rebuild'){S.step='review';if(!S.items.length){S.step='home'}render()}
+else if(a==='home'){S.viewSaved=false;S.step='home';render()}
+else if(a==='openlook'){S.looks=[JSON.parse(JSON.stringify(S.saved[+v]))];S.li=0;S.viewSaved=true;S.step='look';render()}
+else if(a==='addmore'){S.step='add';S.tab='home';render()}
+else if(a==='tomorrow'){const c=S.closet;S.hero=c[S.tom%c.length];S.tom++;log('tomorrow.build · '+S.hero.name);startBuild()}
+else if(a==='item'){S.sheet={type:'item',id:t.dataset.id};render()}
+else if(a==='itemlook'){S.hero=S.closet.find(i=>i.id===t.dataset.id);S.sheet=null;log('item.look · '+S.hero.name);startBuild()}
+else if(a==='editModel'){S.tab='home';S.step='model';render()}
+else if(a==='jump'){jump(v)}
+});
+document.addEventListener('input',e=>{if(e.target.id==='mr'){S.draft.v=+e.target.value;$('#mv').textContent=e.target.value}if(e.target.id==='brandIn'){S.draft.custom=e.target.value}});
+$('#file').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{S.photo=r.result;log('photo.upload');startScan()};r.readAsDataURL(f);e.target.value=''});
+$('#fileModel').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{S.model.photo=r.result;log('model.photo');render()};r.readAsDataURL(f);e.target.value=''});
+$('#reset').onclick=()=>{fresh();render()};
+function jump(v){fresh();
+if(v==='demoCloset'){S.closet=DEMO.map(d=>({...d}));S.onboarded=true;S.flow.model=true;S.flow.scan=true;S.scn=3;S.photo=null;S.items=[];log('jump · демо-шкаф');
+S.hero={id:'n1',name:'Рубашка',art:'shirt',color:'#cfe0ea',slot:'top',src:'closet',meta:'новая вещь'};S.closet.push({...S.hero});startBuild();return}
+if(v==='empty'){S.onboarded=true;S.flow.model=true;S.scn=1;log('jump · пустой шкаф');S.photo=null;startScan();return}
+render()}
+async function openCamera(){S.tab='home';S.step='camera';S.camErr=false;render();
+try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:false});log('camera.open');render()}
+catch(err){S.camErr=true;log('camera.error · '+((err&&err.name)||'denied'));render()}}
+function capture(){const v=$('#cam');if(!v||!v.videoWidth){S.photo=null;return startScan()}
+const c=document.createElement('canvas');c.width=v.videoWidth;c.height=v.videoHeight;const x=c.getContext('2d');x.translate(c.width,0);x.scale(-1,1);x.drawImage(v,0,0);
+S.photo=c.toDataURL('image/jpeg',.8);log('camera.capture');startScan()}
+render();
+</script>
+</body>
+</html>
